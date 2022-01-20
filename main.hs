@@ -8,12 +8,8 @@ weights wb = map (\x -> map (\y -> fst y) x) wb
 biases wb = map (\x -> map (\y -> snd y) x) wb
 wb w b = zipWith (zipWith (,)) w b
 
-select x y 0 = x
-select x y r = y
-crossover x y r = zipWith3 select x y r
-mutate1 x 0 f = f x
-mutate1 x r f = x
-mutate x r f = zipWith (\a b -> mutate1 a b f) x r
+crossover x y r = zipWith3 (\a b c -> if (c == 0) then a else b ) x y r
+mutate x r f = zipWith (\a b -> if (b == 0) then f a else a) x r
 genpopulation x y m = map (\a -> crossover x y a) m
 
 rand01 n = sequence $ replicate n $ randomRIO (0,1::Int)
