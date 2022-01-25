@@ -1,11 +1,11 @@
 import System.Random
 
 dot a b = sum $ zipWith (*) a b
-neuron layer (w,b) activ = activ $ (dot w layer) + b
+neuron layer (w,b) activ = activ $ dot w layer + b
 layer prev wb activ = map (\x -> neuron prev x activ) wb
 net first wb activ = scanl (\x y -> layer x y activ) first wb
-weights wb = map (\x -> map (\y -> fst y) x) wb
-biases wb = map (\x -> map (\y -> snd y) x) wb
+weights wb = map (\x -> map $ \y -> fst y x) wb
+biases wb = map (\x -> map $ \y -> snd y x) wb
 wb w b = zipWith (zipWith (,)) w b
 
 crossover x y r = zipWith3 (\a b c -> if (c == 0) then a else b ) x y r
@@ -17,10 +17,10 @@ randmat01 n m = sequence $ replicate n $ rand01 m
 rgenome n wlimit = sequence $ replicate n $ randomRIO(-wlimit::Float, wlimit::Float)
 exnihilopop n size wlimit = sequence $ replicate n $ rgenome size wlimit
 reproduce x y n = do
-  rm <- randmat01 n (length x)
+  rm <- randmat01 n $ length x
   return $ genpopulation x y rm
 rmutate pop f = do
-  r <- rand01 $ (length pop)
+  r <- rand01 $ length pop
   return $ mutate pop r f
 main = do
         print $ net [0,1] (wb [[[0.1,0.2],[0.2,0.3]]] [[0,1]]) (\x -> 2 * atan x)
